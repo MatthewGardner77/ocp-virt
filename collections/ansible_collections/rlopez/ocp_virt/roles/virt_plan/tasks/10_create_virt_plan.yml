@@ -168,3 +168,27 @@
         plan:
           name: "{{ plan_name }}"
           namespace: "{{ migration_namespace }}"
+
+- name: "push Dynatrace custom deployment event"
+  uri:
+    url: "{{ dt_api_url }}/v1/events"
+    method: POST
+    headers:
+      content-type: application/json
+      Authorization: "Api-Token {{ dt_api_token }}"
+    body:
+      eventType: CUSTOM_DEPLOYMENT
+      attachRules:
+        tagRule:
+        - meTypes:
+          - HOST
+          tags:
+          - context: CONTEXTLESS
+            key: "{{ deployment_tag_key }}"
+            value: "{{ deployment_tag_value }}"
+      source: "Ansible Automation Platform"
+      properties:
+#        Change Ticket: "{{ deployment_change_ticket }}"
+        Details: "VM migration manifest has been created"
+    body_format: json
+    status_code: 200
