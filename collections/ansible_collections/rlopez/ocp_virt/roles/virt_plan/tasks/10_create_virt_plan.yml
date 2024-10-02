@@ -171,24 +171,18 @@
 
 - name: "push Dynatrace custom deployment event"
   uri:
-    url: "{{ dt_api_url }}/v1/events"
+    url: "{{ dt_api_url }}/v2/events/ingest"
     method: POST
     headers:
       content-type: application/json
       Authorization: "Api-Token {{ dt_api_token }}"
     body:
       eventType: CUSTOM_DEPLOYMENT
-      attachRules:
-        tagRule:
-        - meTypes:
-          - HOST
-          tags:
-          - context: CONTEXTLESS
-            key: "{{ deployment_tag_key }}"
-            value: "{{ deployment_tag_value }}"
-      source: "Ansible Automation Platform"
+      entitySelector: "type(HOST),tag("[contextless]project:ocpvirt")"
+      title: "VM to OCP Migration"
       properties:
 #        Change Ticket: "{{ deployment_change_ticket }}"
         Details: "VM migration manifest has been created"
+        Source: "Ansible Automation Platform"
     body_format: json
     status_code: 200
